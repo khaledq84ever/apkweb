@@ -2,3 +2,4 @@ node_modules/
 uploads/
 workspace/
 *.apk
+!public/*.apk
