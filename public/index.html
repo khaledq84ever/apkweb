@@ -11,25 +11,12 @@
 
   body {
     font-family: 'Inter', sans-serif;
-    background: #080b14;
-    color: #f1f5f9;
+    background: #ffffff;
+    color: #000000;
     min-height: 100vh;
     overflow-x: hidden;
   }
 
-  /* Background glow */
-  body::before {
-    content: '';
-    position: fixed;
-    top: -200px;
-    left: 50%;
-    transform: translateX(-50%);
-    width: 800px;
-    height: 800px;
-    background: radial-gradient(circle, rgba(56,189,248,0.12) 0%, transparent 70%);
-    pointer-events: none;
-    z-index: 0;
-  }
 
   .container {
     position: relative;
@@ -61,9 +48,7 @@
   h1 {
     font-size: 2rem;
     font-weight: 800;
-    background: linear-gradient(135deg, #f1f5f9, #94a3b8);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
+    color: #000000;
     margin-bottom: 10px;
     text-align: center;
   }
@@ -211,7 +196,7 @@
 
   /* Footer */
   .footer {
-    color: #334155;
+    color: #666666;
     font-size: 0.78rem;
     text-align: center;
     margin-top: 8px;
