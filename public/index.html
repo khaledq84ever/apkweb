@@ -2,20 +2,21 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
 <title>MyApp</title>
 <style>
   @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@600;800&family=Cairo:wght@700&display=swap');
   *{box-sizing:border-box;margin:0;padding:0}
-  body{font-family:'Space Grotesk',sans-serif;font-weight:600;background:#fff;color:#000;height:100vh;display:flex;align-items:center;justify-content:center;overflow:hidden}
-  .container{width:100%;max-width:320px;padding:16px;display:flex;flex-direction:column;align-items:center;gap:14px}
-  .app-icon{width:96px;height:96px;background:linear-gradient(135deg,#38bdf8,#6366f1);border-radius:26px;display:flex;align-items:center;justify-content:center;font-size:46px;box-shadow:0 16px 48px rgba(56,189,248,0.3)}
-  h1{font-size:2.4rem;font-weight:800;letter-spacing:-0.03em;text-align:center}
-  .ar{font-family:'Cairo',sans-serif;font-size:1.05rem;font-weight:700;text-align:center}
-  .btn{display:flex;align-items:center;justify-content:center;gap:10px;width:100%;background:linear-gradient(135deg,#38bdf8,#6366f1);color:#fff;text-decoration:none;padding:17px 28px;border-radius:14px;font-weight:700;font-size:1rem;box-shadow:0 8px 28px rgba(56,189,248,0.25);transition:transform .15s}
+  html,body{width:100%;height:100%;overflow:hidden}
+  body{font-family:'Space Grotesk',sans-serif;font-weight:600;background:#fff;color:#000;display:flex;align-items:center;justify-content:center}
+  .container{display:flex;flex-direction:column;align-items:center;gap:14px;padding:16px;width:100%;max-width:320px}
+  .app-icon{width:88px;height:88px;background:linear-gradient(135deg,#38bdf8,#6366f1);border-radius:24px;display:flex;align-items:center;justify-content:center;font-size:42px;box-shadow:0 12px 36px rgba(56,189,248,0.3)}
+  h1{font-size:2.2rem;font-weight:800;letter-spacing:-0.03em;text-align:center}
+  .ar{font-family:'Cairo',sans-serif;font-size:1rem;font-weight:700;text-align:center}
+  .btn{display:flex;align-items:center;justify-content:center;gap:10px;width:100%;background:linear-gradient(135deg,#38bdf8,#6366f1);color:#fff;text-decoration:none;padding:16px 24px;border-radius:14px;font-weight:700;font-size:1rem;box-shadow:0 8px 24px rgba(56,189,248,0.25);transition:transform .15s}
   .btn:active{transform:scale(0.97)}
-  .icon{width:22px;height:22px;background:rgba(255,255,255,0.2);border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:13px}
-  .footer{font-size:0.78rem;text-align:center;color:#000;line-height:2}
+  .icon{width:20px;height:20px;background:rgba(255,255,255,0.2);border-radius:5px;display:flex;align-items:center;justify-content:center;font-size:12px}
+  .footer{font-size:0.75rem;text-align:center;color:#000;line-height:1.8}
   .footer a{color:#000;font-weight:700;text-decoration:none}
 </style>
 </head>
