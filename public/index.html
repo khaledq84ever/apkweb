@@ -3,297 +3,57 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>APK Web Tool</title>
+<title>Download App</title>
 <style>
   * { box-sizing: border-box; margin: 0; padding: 0; }
-  body { font-family: 'Segoe UI', sans-serif; background: #0f172a; color: #e2e8f0; min-height: 100vh; }
-
-  header { background: #1e293b; padding: 16px 24px; border-bottom: 1px solid #334155; display: flex; align-items: center; gap: 12px; }
-  header h1 { font-size: 1.4rem; color: #38bdf8; }
-  header span { font-size: 0.85rem; color: #64748b; }
-
-  .upload-zone { max-width: 600px; margin: 60px auto; padding: 24px; }
-  .drop-area { border: 2px dashed #334155; border-radius: 12px; padding: 60px 20px; text-align: center; cursor: pointer; transition: border-color 0.2s; }
-  .drop-area:hover, .drop-area.drag { border-color: #38bdf8; }
-  .drop-area svg { width: 48px; height: 48px; color: #38bdf8; margin-bottom: 12px; }
-  .drop-area p { color: #94a3b8; margin-bottom: 8px; }
-  .drop-area strong { color: #e2e8f0; }
-  #fileInput { display: none; }
-  .btn { background: #38bdf8; color: #0f172a; border: none; padding: 10px 20px; border-radius: 8px; cursor: pointer; font-weight: 600; font-size: 0.9rem; transition: background 0.2s; }
-  .btn:hover { background: #7dd3fc; }
-  .btn.danger { background: #ef4444; color: #fff; }
-  .btn.success { background: #22c55e; color: #fff; }
-  .btn.small { padding: 6px 12px; font-size: 0.8rem; }
-
-  #loading { display: none; text-align: center; margin-top: 20px; color: #94a3b8; }
-  .spinner { width: 32px; height: 32px; border: 3px solid #334155; border-top-color: #38bdf8; border-radius: 50%; animation: spin 0.8s linear infinite; margin: 0 auto 12px; }
-  @keyframes spin { to { transform: rotate(360deg); } }
-
-  #workspace { display: none; height: calc(100vh - 57px); display: none; flex-direction: column; }
-  .toolbar { background: #1e293b; padding: 10px 16px; border-bottom: 1px solid #334155; display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
-  .apk-info { flex: 1; }
-  .apk-info strong { color: #38bdf8; }
-  .apk-info small { color: #64748b; font-size: 0.8rem; margin-left: 8px; }
-
-  .main-layout { display: flex; flex: 1; overflow: hidden; }
-
-  .file-tree { width: 260px; background: #1e293b; border-right: 1px solid #334155; overflow-y: auto; padding: 8px; flex-shrink: 0; }
-  .tree-item { padding: 4px 8px; border-radius: 6px; cursor: pointer; font-size: 0.82rem; color: #94a3b8; display: flex; align-items: center; gap: 6px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-  .tree-item:hover { background: #0f172a; color: #e2e8f0; }
-  .tree-item.active { background: #0f3460; color: #38bdf8; }
-  .tree-item.dir { color: #fbbf24; font-weight: 500; }
-  .tree-item.dir.open::before { content: '▼ '; font-size: 0.7rem; }
-  .tree-item.dir:not(.open)::before { content: '▶ '; font-size: 0.7rem; }
-  .children { padding-left: 12px; }
-
-  .editor-pane { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
-  .editor-header { background: #1e293b; padding: 8px 16px; border-bottom: 1px solid #334155; display: flex; align-items: center; gap: 8px; font-size: 0.85rem; color: #64748b; }
-  .editor-header span { color: #e2e8f0; flex: 1; }
-  #editor { flex: 1; background: #0f172a; color: #e2e8f0; border: none; outline: none; padding: 16px; font-family: 'Cascadia Code', 'Fira Code', monospace; font-size: 13px; line-height: 1.6; resize: none; width: 100%; }
-  .binary-msg { flex: 1; display: flex; align-items: center; justify-content: center; color: #64748b; font-size: 0.9rem; }
-
-  .tabs { display: flex; gap: 0; margin-bottom: 20px; border-bottom: 1px solid #334155; }
-  .tab { padding: 10px 20px; cursor: pointer; color: #64748b; font-size: 0.9rem; border-bottom: 2px solid transparent; transition: all 0.2s; }
-  .tab.active { color: #38bdf8; border-bottom-color: #38bdf8; }
-  .url-form { display: flex; gap: 8px; margin-top: 8px; }
-  .url-input { flex: 1; background: #1e293b; border: 1px solid #334155; color: #e2e8f0; padding: 10px 14px; border-radius: 8px; font-size: 0.9rem; outline: none; }
-  .url-input:focus { border-color: #38bdf8; }
-  .toast { position: fixed; bottom: 20px; right: 20px; background: #22c55e; color: #fff; padding: 10px 18px; border-radius: 8px; font-size: 0.85rem; display: none; z-index: 999; }
-  .toast.error { background: #ef4444; }
+  body {
+    font-family: 'Segoe UI', sans-serif;
+    background: #0f172a;
+    color: #e2e8f0;
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .card {
+    background: #1e293b;
+    border-radius: 20px;
+    padding: 48px 40px;
+    text-align: center;
+    max-width: 360px;
+    width: 90%;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.4);
+  }
+  .icon { font-size: 64px; margin-bottom: 20px; }
+  h1 { font-size: 1.6rem; color: #f1f5f9; margin-bottom: 8px; }
+  p { color: #94a3b8; font-size: 0.95rem; margin-bottom: 32px; }
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    background: #38bdf8;
+    color: #0f172a;
+    text-decoration: none;
+    padding: 14px 32px;
+    border-radius: 12px;
+    font-weight: 700;
+    font-size: 1rem;
+    transition: background 0.2s, transform 0.1s;
+  }
+  .btn:hover { background: #7dd3fc; transform: scale(1.03); }
+  .btn:active { transform: scale(0.98); }
+  .version { margin-top: 20px; font-size: 0.8rem; color: #475569; }
 </style>
 </head>
 <body>
-
-<header>
-  <h1>APK Web Tool</h1>
-  <span>Upload · Edit · Download</span>
-</header>
-
-<div id="uploadPage">
-  <div class="upload-zone">
-    <div class="tabs">
-      <div class="tab active" id="tabFile" onclick="switchTab('file')">Upload File</div>
-      <div class="tab" id="tabUrl" onclick="switchTab('url')">From URL</div>
-    </div>
-
-    <div id="panelFile">
-      <div class="drop-area" id="dropArea" onclick="document.getElementById('fileInput').click()">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-          <path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5m-13.5-9L12 3m0 0l4.5 4.5M12 3v13.5"/>
-        </svg>
-        <p><strong>Click to upload</strong> or drag & drop</p>
-        <p>Android APK file</p>
-      </div>
-      <input type="file" id="fileInput" accept=".apk">
-    </div>
-
-    <div id="panelUrl" style="display:none">
-      <p style="color:#94a3b8; margin-bottom:12px; font-size:0.9rem;">Enter a direct download URL to an APK file</p>
-      <div class="url-form">
-        <input type="url" class="url-input" id="apkUrl" placeholder="https://example.com/app.apk" />
-        <button class="btn" onclick="uploadFromUrl()">Fetch APK</button>
-      </div>
-    </div>
-
-    <div id="loading">
-      <div class="spinner"></div>
-      <p id="loadingMsg">Uploading and extracting APK...</p>
-    </div>
-  </div>
+<div class="card">
+  <div class="icon">📱</div>
+  <h1>My App</h1>
+  <p>Click below to download and install the app on your Android phone.</p>
+  <a class="btn" href="/myapp.apk" download>
+    ⬇ Download APK
+  </a>
+  <div class="version">v1.0 · Android 5.0+</div>
 </div>
-
-<div id="workspace">
-  <div class="toolbar">
-    <div class="apk-info">
-      <strong id="apkLabel">app.apk</strong>
-      <small id="apkMeta"></small>
-    </div>
-    <button class="btn small" id="saveBtn" onclick="saveFile()" style="display:none">Save File</button>
-    <button class="btn small success" onclick="downloadApk()">Download APK</button>
-    <button class="btn small danger" onclick="resetSession()">New APK</button>
-  </div>
-  <div class="main-layout">
-    <div class="file-tree" id="fileTree"></div>
-    <div class="editor-pane">
-      <div class="editor-header">
-        <span id="currentFile">Select a file from the tree</span>
-      </div>
-      <textarea id="editor" placeholder="Select a file to edit..."></textarea>
-      <div class="binary-msg" id="binaryMsg" style="display:none">Binary file — not editable</div>
-    </div>
-  </div>
-</div>
-
-<div class="toast" id="toast"></div>
-
-<script>
-let sessionId = null;
-let currentFilePath = null;
-
-const dropArea = document.getElementById('dropArea');
-const fileInput = document.getElementById('fileInput');
-
-dropArea.addEventListener('dragover', e => { e.preventDefault(); dropArea.classList.add('drag'); });
-dropArea.addEventListener('dragleave', () => dropArea.classList.remove('drag'));
-dropArea.addEventListener('drop', e => { e.preventDefault(); dropArea.classList.remove('drag'); const f = e.dataTransfer.files[0]; if (f) uploadFile(f); });
-fileInput.addEventListener('change', () => { if (fileInput.files[0]) uploadFile(fileInput.files[0]); });
-document.getElementById('apkUrl').addEventListener('keydown', e => { if (e.key === 'Enter') uploadFromUrl(); });
-
-function switchTab(tab) {
-  document.getElementById('tabFile').classList.toggle('active', tab === 'file');
-  document.getElementById('tabUrl').classList.toggle('active', tab === 'url');
-  document.getElementById('panelFile').style.display = tab === 'file' ? 'block' : 'none';
-  document.getElementById('panelUrl').style.display = tab === 'url' ? 'block' : 'none';
-}
-
-async function uploadFromUrl() {
-  const url = document.getElementById('apkUrl').value.trim();
-  if (!url) return showToast('Please enter a URL', true);
-  document.getElementById('loading').style.display = 'block';
-  document.getElementById('panelUrl').style.display = 'none';
-  document.getElementById('loadingMsg').textContent = 'Downloading and extracting APK...';
-
-  const res = await fetch('/upload-url', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ url })
-  });
-  const data = await res.json();
-
-  document.getElementById('loading').style.display = 'none';
-  if (data.error) {
-    document.getElementById('panelUrl').style.display = 'block';
-    return showToast(data.error, true);
-  }
-  handleSession(data);
-}
-
-async function uploadFile(file) {
-  if (!file.name.endsWith('.apk')) return showToast('Please upload an .apk file', true);
-  document.getElementById('loading').style.display = 'block';
-  document.getElementById('loadingMsg').textContent = 'Uploading and extracting APK...';
-  dropArea.style.display = 'none';
-
-  const fd = new FormData();
-  fd.append('apk', file);
-  const res = await fetch('/upload', { method: 'POST', body: fd });
-  const data = await res.json();
-
-  document.getElementById('loading').style.display = 'none';
-
-  if (data.error) { dropArea.style.display = 'block'; return showToast(data.error, true); }
-  handleSession(data, file.name);
-}
-
-function handleSession(data, fallbackName) {
-  sessionId = data.id;
-  document.getElementById('apkLabel').textContent = data.info.name || fallbackName || 'app.apk';
-  document.getElementById('apkMeta').textContent = [data.info.package, data.info.version].filter(Boolean).join(' · ');
-  document.getElementById('uploadPage').style.display = 'none';
-  document.getElementById('workspace').style.display = 'flex';
-  loadTree();
-}
-
-async function loadTree() {
-  const res = await fetch('/files/' + sessionId);
-  const data = await res.json();
-  const tree = document.getElementById('fileTree');
-  tree.innerHTML = '';
-  renderTree(data, tree);
-}
-
-function renderTree(items, parent) {
-  for (const item of items) {
-    const el = document.createElement('div');
-    el.className = 'tree-item ' + item.type;
-    el.title = item.name;
-    const short = item.name.split('/').pop();
-    el.textContent = (item.type === 'dir' ? '' : '') + short;
-
-    if (item.type === 'dir') {
-      const children = document.createElement('div');
-      children.className = 'children';
-      children.style.display = 'none';
-      el.addEventListener('click', (e) => {
-        e.stopPropagation();
-        const open = el.classList.toggle('open');
-        children.style.display = open ? 'block' : 'none';
-      });
-      if (item.children && item.children.length) renderTree(item.children, children);
-      parent.appendChild(el);
-      parent.appendChild(children);
-    } else {
-      el.addEventListener('click', () => openFile(item.name, el));
-      parent.appendChild(el);
-    }
-  }
-}
-
-async function openFile(filePath, el) {
-  document.querySelectorAll('.tree-item').forEach(e => e.classList.remove('active'));
-  el.classList.add('active');
-  currentFilePath = filePath;
-  document.getElementById('currentFile').textContent = filePath;
-
-  const res = await fetch('/file/' + sessionId + '?path=' + encodeURIComponent(filePath));
-  const data = await res.json();
-
-  const editor = document.getElementById('editor');
-  const binaryMsg = document.getElementById('binaryMsg');
-  const saveBtn = document.getElementById('saveBtn');
-
-  if (data.binary) {
-    editor.style.display = 'none';
-    binaryMsg.style.display = 'flex';
-    saveBtn.style.display = 'none';
-  } else {
-    editor.style.display = 'block';
-    binaryMsg.style.display = 'none';
-    editor.value = data.content;
-    saveBtn.style.display = 'inline-block';
-  }
-}
-
-async function saveFile() {
-  if (!currentFilePath) return;
-  const content = document.getElementById('editor').value;
-  const res = await fetch('/file/' + sessionId, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ path: currentFilePath, content })
-  });
-  const data = await res.json();
-  if (data.ok) showToast('File saved');
-  else showToast('Save failed', true);
-}
-
-function downloadApk() {
-  if (!sessionId) return;
-  window.location = '/download/' + sessionId;
-}
-
-function resetSession() {
-  if (sessionId) fetch('/session/' + sessionId, { method: 'DELETE' });
-  sessionId = null;
-  currentFilePath = null;
-  document.getElementById('uploadPage').style.display = 'block';
-  document.getElementById('workspace').style.display = 'none';
-  document.getElementById('dropArea').style.display = 'block';
-  document.getElementById('loading').style.display = 'none';
-  document.getElementById('editor').value = '';
-  document.getElementById('fileTree').innerHTML = '';
-  document.getElementById('apkUrl').value = '';
-  fileInput.value = '';
-  switchTab('file');
-}
-
-function showToast(msg, error = false) {
-  const t = document.getElementById('toast');
-  t.textContent = msg;
-  t.className = 'toast' + (error ? ' error' : '');
-  t.style.display = 'block';
-  setTimeout(() => t.style.display = 'none', 3000);
-}
-</script>
 </body>
 </html>
