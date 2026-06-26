@@ -3,57 +3,284 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Download App</title>
+<title>MyApp</title>
 <style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+
   * { box-sizing: border-box; margin: 0; padding: 0; }
+
   body {
-    font-family: 'Segoe UI', sans-serif;
-    background: #0f172a;
-    color: #e2e8f0;
+    font-family: 'Inter', sans-serif;
+    background: #080b14;
+    color: #f1f5f9;
     min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* Background glow */
+  body::before {
+    content: '';
+    position: fixed;
+    top: -200px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 800px;
+    height: 800px;
+    background: radial-gradient(circle, rgba(56,189,248,0.12) 0%, transparent 70%);
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .container {
+    position: relative;
+    z-index: 1;
+    max-width: 420px;
+    margin: 0 auto;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 40px 24px;
+  }
+
+  /* App Icon */
+  .app-icon {
+    width: 100px;
+    height: 100px;
+    background: linear-gradient(135deg, #38bdf8, #6366f1);
+    border-radius: 28px;
     display: flex;
     align-items: center;
     justify-content: center;
+    font-size: 48px;
+    margin-bottom: 28px;
+    box-shadow: 0 20px 60px rgba(56,189,248,0.3);
   }
-  .card {
-    background: #1e293b;
-    border-radius: 20px;
-    padding: 48px 40px;
+
+  h1 {
+    font-size: 2rem;
+    font-weight: 800;
+    background: linear-gradient(135deg, #f1f5f9, #94a3b8);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    margin-bottom: 10px;
     text-align: center;
-    max-width: 360px;
-    width: 90%;
-    box-shadow: 0 20px 60px rgba(0,0,0,0.4);
   }
-  .icon { font-size: 64px; margin-bottom: 20px; }
-  h1 { font-size: 1.6rem; color: #f1f5f9; margin-bottom: 8px; }
-  p { color: #94a3b8; font-size: 0.95rem; margin-bottom: 32px; }
-  .btn {
-    display: inline-flex;
-    align-items: center;
-    gap: 10px;
-    background: #38bdf8;
-    color: #0f172a;
-    text-decoration: none;
-    padding: 14px 32px;
-    border-radius: 12px;
+
+  .subtitle {
+    color: #64748b;
+    font-size: 0.95rem;
+    text-align: center;
+    margin-bottom: 40px;
+    line-height: 1.6;
+  }
+
+  /* Stats row */
+  .stats {
+    display: flex;
+    gap: 12px;
+    margin-bottom: 40px;
+    width: 100%;
+  }
+
+  .stat {
+    flex: 1;
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 14px;
+    padding: 16px 12px;
+    text-align: center;
+  }
+
+  .stat-value {
+    font-size: 1.2rem;
     font-weight: 700;
-    font-size: 1rem;
-    transition: background 0.2s, transform 0.1s;
+    color: #38bdf8;
+    margin-bottom: 4px;
   }
-  .btn:hover { background: #7dd3fc; transform: scale(1.03); }
-  .btn:active { transform: scale(0.98); }
-  .version { margin-top: 20px; font-size: 0.8rem; color: #475569; }
+
+  .stat-label {
+    font-size: 0.72rem;
+    color: #64748b;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+
+  /* Download button */
+  .download-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    width: 100%;
+    background: linear-gradient(135deg, #38bdf8, #6366f1);
+    color: #fff;
+    text-decoration: none;
+    padding: 18px 32px;
+    border-radius: 16px;
+    font-weight: 700;
+    font-size: 1.05rem;
+    transition: all 0.2s;
+    box-shadow: 0 8px 32px rgba(56,189,248,0.25);
+    margin-bottom: 16px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .download-btn::before {
+    content: '';
+    position: absolute;
+    top: 0; left: -100%;
+    width: 100%; height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent);
+    transition: left 0.5s;
+  }
+
+  .download-btn:hover::before { left: 100%; }
+  .download-btn:hover { transform: translateY(-2px); box-shadow: 0 12px 40px rgba(56,189,248,0.35); }
+  .download-btn:active { transform: translateY(0); }
+
+  .download-icon {
+    width: 22px;
+    height: 22px;
+    background: rgba(255,255,255,0.2);
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+  }
+
+  /* Info tags */
+  .tags {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    justify-content: center;
+    margin-bottom: 40px;
+  }
+
+  .tag {
+    background: rgba(255,255,255,0.05);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 20px;
+    padding: 5px 14px;
+    font-size: 0.78rem;
+    color: #94a3b8;
+  }
+
+  /* Feature list */
+  .features {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-bottom: 40px;
+  }
+
+  .feature {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    background: rgba(255,255,255,0.03);
+    border: 1px solid rgba(255,255,255,0.06);
+    border-radius: 14px;
+    padding: 14px 16px;
+  }
+
+  .feature-icon {
+    font-size: 22px;
+    width: 40px;
+    text-align: center;
+    flex-shrink: 0;
+  }
+
+  .feature-text strong {
+    display: block;
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: #e2e8f0;
+    margin-bottom: 2px;
+  }
+
+  .feature-text span {
+    font-size: 0.78rem;
+    color: #64748b;
+  }
+
+  /* Footer */
+  .footer {
+    color: #334155;
+    font-size: 0.78rem;
+    text-align: center;
+    margin-top: 8px;
+  }
 </style>
 </head>
 <body>
-<div class="card">
-  <div class="icon">📱</div>
-  <h1>My App</h1>
-  <p>Click below to download and install the app on your Android phone.</p>
-  <a class="btn" href="/myapp.apk" download>
-    ⬇ Download APK
+<div class="container">
+
+  <div class="app-icon">📱</div>
+
+  <h1>MyApp</h1>
+  <p class="subtitle">Fast, modern and easy to use.<br>Download and install in seconds.</p>
+
+  <div class="stats">
+    <div class="stat">
+      <div class="stat-value">1.0</div>
+      <div class="stat-label">Version</div>
+    </div>
+    <div class="stat">
+      <div class="stat-value">11KB</div>
+      <div class="stat-label">Size</div>
+    </div>
+    <div class="stat">
+      <div class="stat-value">5.0+</div>
+      <div class="stat-label">Android</div>
+    </div>
+  </div>
+
+  <a class="download-btn" href="/myapp.apk" download>
+    <div class="download-icon">⬇</div>
+    Download APK
   </a>
-  <div class="version">v1.0 · Android 5.0+</div>
+
+  <div class="tags">
+    <span class="tag">✅ Free</span>
+    <span class="tag">🔒 Safe</span>
+    <span class="tag">⚡ Fast</span>
+    <span class="tag">📴 No Ads</span>
+  </div>
+
+  <div class="features">
+    <div class="feature">
+      <div class="feature-icon">🚀</div>
+      <div class="feature-text">
+        <strong>Fast Performance</strong>
+        <span>Smooth and responsive on all devices</span>
+      </div>
+    </div>
+    <div class="feature">
+      <div class="feature-icon">🎨</div>
+      <div class="feature-text">
+        <strong>Modern Design</strong>
+        <span>Clean UI built for Android</span>
+      </div>
+    </div>
+    <div class="feature">
+      <div class="feature-icon">🔒</div>
+      <div class="feature-text">
+        <strong>Secure & Private</strong>
+        <span>No data collected, ever</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="footer">
+    © 2026 MyApp · v1.0.0
+  </div>
+
 </div>
 </body>
 </html>
