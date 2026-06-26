@@ -224,13 +224,4 @@ app.delete('/session/:id', (req, res) => {
   res.json({ ok: true });
 });
 
-// Permanent APK route — always /app, file always public/app.apk, URL never changes
-app.get('/app', (req, res) => {
-  const apkPath = path.join(__dirname, 'public', 'app.apk');
-  if (!fs.existsSync(apkPath)) return res.status(404).send('APK not found');
-  res.setHeader('Content-Type', 'application/vnd.android.package-archive');
-  res.setHeader('Content-Disposition', 'attachment; filename="arab-radio.apk"');
-  res.sendFile(apkPath);
-});
-
 app.listen(PORT, () => console.log(`APK Web running on port ${PORT}`));
