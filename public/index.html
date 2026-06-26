@@ -5,223 +5,33 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>MyApp</title>
 <style>
-  @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;600;700;800&family=Cairo:wght@700;800&display=swap');
-
-  * { box-sizing: border-box; margin: 0; padding: 0; }
-
-  body {
-    font-family: 'Space Grotesk', sans-serif;
-    font-weight: 600;
-    background: #ffffff;
-    color: #000000;
-    min-height: 100vh;
-    overflow-x: hidden;
-  }
-
-
-  .container {
-    position: relative;
-    z-index: 1;
-    max-width: 400px;
-    margin: 0 auto;
-    min-height: 100vh;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    padding: 24px;
-    padding-bottom: 80px;
-    gap: 24px;
-  }
-
-  /* App Icon */
-  .app-icon {
-    width: 100px;
-    height: 100px;
-    background: linear-gradient(135deg, #38bdf8, #6366f1);
-    border-radius: 28px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 48px;
-    box-shadow: 0 20px 60px rgba(56,189,248,0.3);
-  }
-
-  h1 {
-    font-family: 'Space Grotesk', sans-serif;
-    font-size: 2.6rem;
-    font-weight: 800;
-    color: #000000;
-    text-align: center;
-    letter-spacing: -0.03em;
-  }
-
-  .subtitle {
-    color: #64748b;
-    font-size: 0.95rem;
-    text-align: center;
-    margin-bottom: 40px;
-    line-height: 1.6;
-  }
-
-  /* Stats row */
-  .stats {
-    display: flex;
-    gap: 12px;
-    margin-bottom: 40px;
-    width: 100%;
-  }
-
-  .stat {
-    flex: 1;
-    background: rgba(255,255,255,0.04);
-    border: 1px solid rgba(255,255,255,0.08);
-    border-radius: 14px;
-    padding: 16px 12px;
-    text-align: center;
-  }
-
-  .stat-value {
-    font-size: 1.2rem;
-    font-weight: 700;
-    color: #38bdf8;
-    margin-bottom: 4px;
-  }
-
-  .stat-label {
-    font-size: 0.72rem;
-    color: #64748b;
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
-  }
-
-  /* Download button */
-  .download-btn {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 12px;
-    width: 100%;
-    background: linear-gradient(135deg, #38bdf8, #6366f1);
-    color: #fff;
-    text-decoration: none;
-    padding: 18px 32px;
-    border-radius: 16px;
-    font-weight: 700;
-    font-size: 1.05rem;
-    transition: all 0.2s;
-    box-shadow: 0 8px 32px rgba(56,189,248,0.25);
-    position: relative;
-    overflow: hidden;
-  }
-
-  .download-btn::before {
-    content: '';
-    position: absolute;
-    top: 0; left: -100%;
-    width: 100%; height: 100%;
-    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent);
-    transition: left 0.5s;
-  }
-
-  .download-btn:hover::before { left: 100%; }
-  .download-btn:hover { transform: translateY(-2px); box-shadow: 0 12px 40px rgba(56,189,248,0.35); }
-  .download-btn:active { transform: translateY(0); }
-
-  .download-icon {
-    width: 22px;
-    height: 22px;
-    background: rgba(255,255,255,0.2);
-    border-radius: 6px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 14px;
-  }
-
-  /* Info tags */
-  .tags {
-    display: flex;
-    gap: 8px;
-    flex-wrap: wrap;
-    justify-content: center;
-    margin-bottom: 40px;
-  }
-
-  .tag {
-    background: rgba(255,255,255,0.05);
-    border: 1px solid rgba(255,255,255,0.08);
-    border-radius: 20px;
-    padding: 5px 14px;
-    font-size: 0.78rem;
-    color: #94a3b8;
-  }
-
-  /* Feature list */
-  .features {
-    width: 100%;
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
-    margin-bottom: 40px;
-  }
-
-  .feature {
-    display: flex;
-    align-items: center;
-    gap: 14px;
-    background: rgba(255,255,255,0.03);
-    border: 1px solid rgba(255,255,255,0.06);
-    border-radius: 14px;
-    padding: 14px 16px;
-  }
-
-  .feature-icon {
-    font-size: 22px;
-    width: 40px;
-    text-align: center;
-    flex-shrink: 0;
-  }
-
-  .feature-text strong {
-    display: block;
-    font-size: 0.9rem;
-    font-weight: 600;
-    color: #e2e8f0;
-    margin-bottom: 2px;
-  }
-
-  .feature-text span {
-    font-size: 0.78rem;
-    color: #64748b;
-  }
-
-  /* Footer */
-  .footer {
-    color: #000000;
-    font-size: 0.78rem;
-    text-align: center;
-    margin-top: 8px;
-  }
+  @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@600;800&family=Cairo:wght@700&display=swap');
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:'Space Grotesk',sans-serif;font-weight:600;background:#fff;color:#000;min-height:100vh;display:flex;align-items:center;justify-content:center}
+  .container{width:100%;max-width:320px;padding:16px;display:flex;flex-direction:column;align-items:center;gap:14px}
+  .app-icon{width:96px;height:96px;background:linear-gradient(135deg,#38bdf8,#6366f1);border-radius:26px;display:flex;align-items:center;justify-content:center;font-size:46px;box-shadow:0 16px 48px rgba(56,189,248,0.3)}
+  h1{font-size:2.4rem;font-weight:800;letter-spacing:-0.03em;text-align:center}
+  .ar{font-family:'Cairo',sans-serif;font-size:1.05rem;font-weight:700;text-align:center}
+  .btn{display:flex;align-items:center;justify-content:center;gap:10px;width:100%;background:linear-gradient(135deg,#38bdf8,#6366f1);color:#fff;text-decoration:none;padding:17px 28px;border-radius:14px;font-weight:700;font-size:1rem;box-shadow:0 8px 28px rgba(56,189,248,0.25);transition:transform .15s}
+  .btn:active{transform:scale(0.97)}
+  .icon{width:22px;height:22px;background:rgba(255,255,255,0.2);border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:13px}
+  .footer{font-size:0.78rem;text-align:center;color:#000;line-height:2}
+  .footer a{color:#000;font-weight:700;text-decoration:none}
 </style>
 </head>
 <body>
 <div class="container">
-
   <div class="app-icon">📱</div>
-
   <h1>MyApp</h1>
-  <p style="font-family:'Cairo',sans-serif;font-size:1.1rem;font-weight:700;color:#000;text-align:center;">تحميل التطبيق</p>
-  <a class="download-btn" href="/myapp.apk" download>
-    <div class="download-icon">⬇</div>
+  <p class="ar">تحميل التطبيق</p>
+  <a class="btn" href="/myapp.apk" download>
+    <div class="icon">⬇</div>
     Download APK
   </a>
-
   <div class="footer">
-    © 2026 MyApp · v1.0.0<br><br>
-    Programmed by <a href="https://x.com/KhaledQ84Ever" target="_blank" style="color:#000000;font-weight:700;text-decoration:none;">@KhaledQ84Ever</a>
+    © 2026 MyApp · v1.0.0<br>
+    Programmed by <a href="https://x.com/KhaledQ84Ever" target="_blank">@KhaledQ84Ever</a>
   </div>
-
 </div>
 </body>
 </html>
