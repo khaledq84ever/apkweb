@@ -1,0 +1,750 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="theme-color" content="#1a1a2e">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<title>TaxiApp</title>
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#1a1a2e;color:#fff;height:100dvh;overflow:hidden;user-select:none}
+#app{height:100dvh;display:flex;flex-direction:column}
+
+/* ── screens ── */
+.screen{display:none;flex-direction:column;height:100dvh;overflow:hidden}
+.screen.active{display:flex}
+
+/* ── splash ── */
+#screen-splash{background:#1a1a2e;justify-content:center;align-items:center;gap:12px}
+#screen-splash .logo{font-size:72px}
+#screen-splash h1{font-size:32px;font-weight:700;color:#FFD700;letter-spacing:1px}
+#screen-splash p{color:#888;font-size:15px}
+.spinner{width:36px;height:36px;border:3px solid #333;border-top-color:#FFD700;border-radius:50%;animation:spin .8s linear infinite;margin-top:32px}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+/* ── auth ── */
+#screen-auth{background:#fff;justify-content:center;padding:28px}
+.auth-logo{font-size:48px;text-align:center;margin-bottom:8px}
+.auth-title{font-size:24px;font-weight:700;color:#1a1a2e;text-align:center;margin-bottom:4px}
+.auth-sub{color:#888;text-align:center;font-size:14px;margin-bottom:32px}
+.auth-step{display:none;flex-direction:column;gap:12px}
+.auth-step.active{display:flex}
+label{font-size:13px;color:#666;font-weight:500}
+input,select{border:1.5px solid #e0e0e0;border-radius:12px;padding:14px 16px;font-size:16px;width:100%;outline:none;color:#1a1a2e;background:#fff;transition:border-color .2s}
+input:focus,select:focus{border-color:#FFD700}
+.btn{background:#FFD700;color:#1a1a2e;border:none;border-radius:14px;padding:16px;font-size:17px;font-weight:700;cursor:pointer;width:100%;transition:opacity .15s}
+.btn:active{opacity:.85}
+.btn-outline{background:transparent;border:1.5px solid #ddd;color:#666}
+.otp-hint{background:#fff8e1;border:1px solid #FFD700;border-radius:10px;padding:12px;font-size:14px;color:#1a1a2e;text-align:center;display:none}
+.otp-hint span{font-size:24px;font-weight:700;letter-spacing:4px;display:block;color:#1a1a2e;margin-top:4px}
+
+/* ── home ── */
+#screen-home{position:relative;background:#000}
+#map{flex:1;z-index:1}
+.top-bar{position:absolute;top:0;left:0;right:0;z-index:10;display:flex;justify-content:space-between;align-items:center;padding:52px 16px 12px;pointer-events:none}
+.badge{background:#1a1a2e;color:#FFD700;font-weight:700;font-size:13px;padding:8px 14px;border-radius:20px;pointer-events:auto;box-shadow:0 2px 8px rgba(0,0,0,.3)}
+.icon-btn{width:42px;height:42px;background:#1a1a2e;border-radius:21px;display:flex;align-items:center;justify-content:center;font-size:20px;pointer-events:auto;box-shadow:0 2px 8px rgba(0,0,0,.3);cursor:pointer;border:none}
+.bottom-panel{background:#fff;border-radius:28px 28px 0 0;padding:22px 22px 32px;position:relative;z-index:10;box-shadow:0 -4px 24px rgba(0,0,0,.12)}
+.greeting{font-size:20px;font-weight:700;color:#1a1a2e;margin-bottom:2px}
+.greeting-sub{color:#888;font-size:13px;margin-bottom:16px}
+.search-box{background:#f5f5f5;border-radius:14px;padding:14px 16px;display:flex;align-items:center;gap:10px;cursor:pointer;border:1.5px solid #eee;margin-bottom:10px}
+.search-box span{color:#999;font-size:15px}
+.history-btn{display:flex;align-items:center;justify-content:center;gap:6px;padding:10px;cursor:pointer;background:none;border:none;color:#FFD700;font-weight:700;font-size:14px;width:100%}
+
+/* ── book ride ── */
+#screen-book{background:#fff}
+.screen-header{background:#FFD700;padding:52px 16px 16px;display:flex;align-items:center;gap:12px}
+.screen-header h2{font-size:18px;font-weight:700;color:#1a1a2e}
+.back-btn{background:none;border:none;font-size:22px;cursor:pointer;color:#1a1a2e;padding:4px}
+#book-map{height:45vh}
+.book-panel{padding:16px;overflow-y:auto;background:#fff;flex:1}
+.addr-label{font-size:12px;color:#888;text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px}
+.addr-row{display:flex;align-items:center;gap:10px;background:#f5f5f5;border-radius:12px;padding:12px;margin-bottom:10px}
+.addr-dot-green{width:10px;height:10px;background:#16a34a;border-radius:50%;flex-shrink:0}
+.addr-dot-red{width:10px;height:10px;background:#ef4444;border-radius:50%;flex-shrink:0}
+.addr-text{font-size:14px;color:#1a1a2e;flex:1}
+.tap-hint{text-align:center;color:#888;font-size:13px;margin:8px 0 14px}
+.pay-row{display:flex;gap:10px;margin-bottom:14px}
+.pay-opt{flex:1;border:1.5px solid #ddd;border-radius:12px;padding:12px;text-align:center;cursor:pointer;font-size:14px;color:#666;font-weight:500;transition:all .2s}
+.pay-opt.active{border-color:#FFD700;background:#fff8e1;color:#1a1a2e;font-weight:700}
+.fare-card{background:#1a1a2e;border-radius:16px;padding:16px;text-align:center;margin-bottom:14px}
+.fare-label{color:#aaa;font-size:12px;margin-bottom:4px}
+.fare-amount{color:#FFD700;font-size:36px;font-weight:700}
+.fare-km{color:#666;font-size:12px;margin-top:2px}
+
+/* ── finding driver ── */
+#screen-finding{background:#fff;justify-content:center;align-items:center;padding:32px}
+.pulse-wrap{position:relative;width:120px;height:120px;margin-bottom:28px}
+.pulse-ring{position:absolute;inset:-20px;border:2px solid #FFD70033;border-radius:50%;animation:pulse 1.5s ease-out infinite}
+.pulse-ring:nth-child(2){animation-delay:.5s}
+.pulse-core{width:120px;height:120px;background:#1a1a2e;border-radius:60px;display:flex;align-items:center;justify-content:center;font-size:52px}
+@keyframes pulse{0%{transform:scale(.8);opacity:.6}100%{transform:scale(1.6);opacity:0}}
+#screen-finding h2{font-size:22px;font-weight:700;color:#1a1a2e;margin-bottom:8px}
+#screen-finding p{color:#888;font-size:14px;text-align:center;margin-bottom:8px}
+
+/* ── tracking ── */
+#screen-track{background:#fff;position:relative}
+#track-map{flex:1}
+.track-panel{background:#fff;border-radius:28px 28px 0 0;padding:20px;box-shadow:0 -4px 20px rgba(0,0,0,.1);position:absolute;bottom:0;left:0;right:0;z-index:10}
+.status-bar{background:#FFD700;padding:8px 14px;border-radius:20px;font-size:13px;font-weight:700;color:#1a1a2e;display:inline-block;margin-bottom:12px}
+.driver-row{display:flex;align-items:center;gap:12px;margin-bottom:12px}
+.driver-avatar{width:52px;height:52px;background:#FFD700;border-radius:26px;display:flex;align-items:center;justify-content:center;font-size:26px;flex-shrink:0}
+.driver-name{font-size:17px;font-weight:700;color:#1a1a2e}
+.driver-car{color:#888;font-size:13px;margin-top:2px}
+.rating-row{display:flex;align-items:center;gap:4px;margin-top:3px}
+.rating-row span{font-size:12px;color:#888}
+.track-actions{display:flex;gap:10px}
+.call-btn{flex:1;background:#f0f0f0;border:none;border-radius:12px;padding:14px;font-size:14px;font-weight:600;color:#1a1a2e;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px}
+.chat-btn{background:#1a1a2e;color:#FFD700}
+
+/* ── complete ── */
+#screen-complete{background:#f5f5f5;overflow-y:auto}
+.complete-header{background:#1a1a2e;padding:52px 20px 32px;text-align:center}
+.complete-emoji{font-size:64px;margin-bottom:12px}
+.complete-title{font-size:24px;font-weight:700;color:#FFD700;margin-bottom:4px}
+.complete-sub{color:#aaa;font-size:14px}
+.complete-body{padding:20px;display:flex;flex-direction:column;gap:14px}
+.sum-card{background:#fff;border-radius:16px;padding:20px;box-shadow:0 2px 8px rgba(0,0,0,.06)}
+.sum-title{font-size:13px;color:#888;text-transform:uppercase;letter-spacing:.5px;margin-bottom:14px}
+.sum-row{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;font-size:15px}
+.sum-row .lbl{color:#666}
+.sum-row .val{color:#1a1a2e;font-weight:600}
+.divider{height:1px;background:#f0f0f0;margin:10px 0}
+.big-total{display:flex;justify-content:space-between;align-items:center;font-size:18px;font-weight:700;color:#1a1a2e}
+.stars-wrap{display:flex;justify-content:center;gap:8px;font-size:36px;cursor:pointer;margin:4px 0}
+
+/* ── history ── */
+#screen-history{background:#f5f5f5;overflow-y:auto}
+.hist-header{background:#FFD700;padding:52px 16px 16px;display:flex;align-items:center;gap:12px}
+.hist-header h2{font-size:18px;font-weight:700;color:#1a1a2e}
+.hist-list{padding:16px;display:flex;flex-direction:column;gap:12px}
+.hist-card{background:#fff;border-radius:14px;padding:16px;box-shadow:0 2px 6px rgba(0,0,0,.06)}
+.hist-date{font-size:12px;color:#888;margin-bottom:6px}
+.hist-addr{font-size:14px;color:#1a1a2e;font-weight:500;margin-bottom:2px}
+.hist-fare{color:#FFD700;font-weight:700;font-size:16px;margin-top:6px}
+.hist-status{display:inline-block;padding:3px 10px;border-radius:20px;font-size:11px;font-weight:700;background:#dcfce7;color:#16a34a}
+.hist-empty{text-align:center;color:#aaa;padding:40px 20px;font-size:15px}
+
+/* ── toast ── */
+.toast{position:fixed;bottom:100px;left:50%;transform:translateX(-50%);background:#1a1a2e;color:#fff;padding:10px 20px;border-radius:20px;font-size:14px;z-index:999;opacity:0;transition:opacity .3s;pointer-events:none;white-space:nowrap}
+.toast.show{opacity:1}
+
+/* ── profile menu ── */
+#screen-profile{background:#f5f5f5;overflow-y:auto}
+.profile-header{background:#1a1a2e;padding:52px 20px 28px;text-align:center}
+.profile-avatar{width:80px;height:80px;background:#FFD700;border-radius:40px;display:flex;align-items:center;justify-content:center;font-size:40px;margin:0 auto 12px}
+.profile-name{font-size:20px;font-weight:700;color:#fff;margin-bottom:2px}
+.profile-phone{color:#888;font-size:14px}
+.menu-list{padding:16px;display:flex;flex-direction:column;gap:10px}
+.menu-item{background:#fff;border-radius:14px;padding:16px;display:flex;align-items:center;gap:12px;cursor:pointer;border:none;width:100%;text-align:left;font-size:15px;color:#1a1a2e;font-weight:500;box-shadow:0 2px 6px rgba(0,0,0,.06)}
+.menu-item .mi{font-size:22px}
+.menu-item .ma{margin-left:auto;color:#ccc;font-size:20px}
+.logout-item{color:#ef4444;border:1.5px solid #fee2e2}
+</style>
+</head>
+<body>
+<div id="app">
+
+<!-- SPLASH -->
+<div id="screen-splash" class="screen active">
+  <div class="logo">🚖</div>
+  <h1>TaxiApp</h1>
+  <p>Your ride, on demand</p>
+  <div class="spinner"></div>
+</div>
+
+<!-- AUTH -->
+<div id="screen-auth" class="screen">
+  <div class="auth-logo">🚖</div>
+  <div class="auth-title">Welcome</div>
+  <div class="auth-sub">Enter your phone to continue</div>
+
+  <div id="step-phone" class="auth-step active">
+    <div>
+      <label>Phone Number</label>
+      <input id="phone-input" type="tel" value="+966" placeholder="+966501234567">
+    </div>
+    <div>
+      <label>I am a</label>
+      <select id="role-select">
+        <option value="PASSENGER">🧑 Passenger</option>
+        <option value="DRIVER">🚗 Driver</option>
+      </select>
+    </div>
+    <button class="btn" onclick="sendOtp()">Send Code</button>
+  </div>
+
+  <div id="step-otp" class="auth-step" style="display:none">
+    <div class="otp-hint" id="otp-hint">
+      Your code: <span id="otp-code-display"></span>
+    </div>
+    <div>
+      <label>Enter 6-digit code</label>
+      <input id="otp-input" type="number" placeholder="123456" maxlength="6" inputmode="numeric">
+    </div>
+    <button class="btn" onclick="verifyOtp()">Verify & Login</button>
+    <button class="btn btn-outline" onclick="backToPhone()">← Change Number</button>
+  </div>
+</div>
+
+<!-- HOME -->
+<div id="screen-home" class="screen">
+  <div id="map"></div>
+  <div class="top-bar">
+    <div class="badge" id="drivers-badge">Loading...</div>
+    <button class="icon-btn" onclick="showProfile()">👤</button>
+  </div>
+  <div class="bottom-panel">
+    <div class="greeting" id="home-greeting">Hello! 👋</div>
+    <div class="greeting-sub">Where do you want to go?</div>
+    <div class="search-box" onclick="showBook()">
+      <span>🔍</span>
+      <span>Enter destination...</span>
+    </div>
+    <button class="history-btn" onclick="showHistory()">📋 Trip History</button>
+  </div>
+</div>
+
+<!-- BOOK RIDE -->
+<div id="screen-book" class="screen">
+  <div class="screen-header">
+    <button class="back-btn" onclick="showHome()">←</button>
+    <h2>Book a Ride</h2>
+  </div>
+  <div id="book-map"></div>
+  <div class="book-panel">
+    <div class="addr-label">Pickup</div>
+    <div class="addr-row">
+      <div class="addr-dot-green"></div>
+      <div class="addr-text" id="pickup-text">📍 Your current location</div>
+    </div>
+    <div class="addr-label">Destination</div>
+    <div class="addr-row">
+      <div class="addr-dot-red"></div>
+      <div class="addr-text" id="dropoff-text" style="color:#999">Tap the map to set destination</div>
+    </div>
+    <div class="tap-hint" id="tap-hint">👆 Tap map to set your destination</div>
+    <div id="fare-section" style="display:none">
+      <div class="fare-card">
+        <div class="fare-label">Estimated Fare</div>
+        <div class="fare-amount" id="fare-amount">— SAR</div>
+        <div class="fare-km" id="fare-km"></div>
+      </div>
+      <div class="pay-row">
+        <div class="pay-opt active" id="pay-cash" onclick="selectPay('CASH')">💵 Cash</div>
+        <div class="pay-opt" id="pay-card" onclick="selectPay('CARD')">💳 Card</div>
+      </div>
+      <button class="btn" onclick="bookRide()">Book Ride →</button>
+    </div>
+  </div>
+</div>
+
+<!-- FINDING DRIVER -->
+<div id="screen-finding" class="screen">
+  <div class="pulse-wrap">
+    <div class="pulse-ring"></div>
+    <div class="pulse-ring"></div>
+    <div class="pulse-core">🚖</div>
+  </div>
+  <h2>Finding your driver...</h2>
+  <p>We're connecting you with a nearby driver</p>
+  <p style="font-size:12px;margin-bottom:36px">Sharing your location</p>
+  <button class="btn btn-outline" style="max-width:200px" onclick="cancelSearch()">Cancel</button>
+</div>
+
+<!-- TRACKING -->
+<div id="screen-track" class="screen">
+  <div id="track-map" style="height:55vh"></div>
+  <div class="track-panel">
+    <div class="status-bar" id="track-status">Driver is on the way 🚗</div>
+    <div class="driver-row">
+      <div class="driver-avatar">🚗</div>
+      <div>
+        <div class="driver-name" id="track-driver-name">Your Driver</div>
+        <div class="driver-car" id="track-driver-car">Toyota Camry • White</div>
+        <div class="rating-row">⭐<span id="track-driver-rating">4.8 • Verified Driver</span></div>
+      </div>
+    </div>
+    <div class="track-actions">
+      <button class="call-btn" onclick="callDriver()">📞 Call</button>
+      <button class="call-btn chat-btn" onclick="toast('Chat coming soon')">💬 Chat</button>
+    </div>
+  </div>
+</div>
+
+<!-- COMPLETE -->
+<div id="screen-complete" class="screen">
+  <div class="complete-header">
+    <div class="complete-emoji">🎉</div>
+    <div class="complete-title">Trip Complete!</div>
+    <div class="complete-sub">Thanks for riding with TaxiApp</div>
+  </div>
+  <div class="complete-body">
+    <div class="sum-card">
+      <div class="sum-title">Fare</div>
+      <div style="text-align:center;margin-bottom:16px">
+        <div style="font-size:48px;font-weight:700;color:#1a1a2e" id="final-fare">— SAR</div>
+        <div style="color:#888;font-size:13px" id="pay-method">Cash</div>
+      </div>
+      <div class="divider"></div>
+      <div class="sum-row"><span class="lbl">Distance</span><span class="val" id="final-km">—</span></div>
+      <div class="sum-row"><span class="lbl">Pickup</span><span class="val" id="final-pickup" style="max-width:60%;text-align:right;font-size:13px">—</span></div>
+      <div class="sum-row"><span class="lbl">Dropoff</span><span class="val" id="final-dropoff" style="max-width:60%;text-align:right;font-size:13px">—</span></div>
+    </div>
+    <div class="sum-card">
+      <div class="sum-title">Rate your driver</div>
+      <div class="stars-wrap" id="stars">⭐⭐⭐⭐⭐</div>
+    </div>
+    <button class="btn" onclick="showHome()">Back to Home</button>
+  </div>
+</div>
+
+<!-- HISTORY -->
+<div id="screen-history" class="screen">
+  <div class="hist-header">
+    <button class="back-btn" onclick="showHome()">←</button>
+    <h2>Trip History</h2>
+  </div>
+  <div class="hist-list" id="hist-list"></div>
+</div>
+
+<!-- PROFILE -->
+<div id="screen-profile" class="screen">
+  <div class="profile-header">
+    <div class="profile-avatar">👤</div>
+    <div class="profile-name" id="profile-name">User</div>
+    <div class="profile-phone" id="profile-phone"></div>
+  </div>
+  <div class="menu-list">
+    <button class="menu-item" onclick="showHistory()"><span class="mi">📋</span>Trip History<span class="ma">›</span></button>
+    <button class="menu-item" onclick="toast('Coming soon')"><span class="mi">⭐</span>My Ratings<span class="ma">›</span></button>
+    <button class="menu-item" onclick="toast('Coming soon')"><span class="mi">💳</span>Payment Methods<span class="ma">›</span></button>
+    <button class="menu-item" onclick="toast('Coming soon')"><span class="mi">🔔</span>Notifications<span class="ma">›</span></button>
+    <button class="menu-item" onclick="showHome()"><span class="mi">🗺️</span>Back to Map<span class="ma">›</span></button>
+    <button class="menu-item logout-item" onclick="logout()"><span class="mi">🚪</span>Logout</button>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+const API = 'https://taxiapp-api-production.up.railway.app/api/v1';
+let token = localStorage.getItem('taxi_token');
+let user = JSON.parse(localStorage.getItem('taxi_user') || 'null');
+let myLat = 24.7136, myLng = 46.6753; // Riyadh default
+let dropoffLat = null, dropoffLng = null;
+let paymentMethod = 'CASH';
+let currentTrip = null;
+let homeMap = null, bookMap = null, trackMap = null;
+let myMarker = null, driverMarker = null, dropMarker = null;
+let socket = null;
+let trackInterval = null;
+
+// ── utils ──
+function show(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById('screen-' + id).classList.add('active');
+}
+
+function toast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2500);
+}
+
+function authHeader() {
+  return { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token };
+}
+
+async function api(method, path, body) {
+  const opts = { method, headers: authHeader() };
+  if (body) opts.body = JSON.stringify(body);
+  const res = await fetch(API + path, opts);
+  return res.json();
+}
+
+// ── init ──
+window.addEventListener('load', async () => {
+  // Get location
+  if (navigator.geolocation) {
+    navigator.geolocation.getCurrentPosition(pos => {
+      myLat = pos.coords.latitude;
+      myLng = pos.coords.longitude;
+    });
+  }
+
+  await new Promise(r => setTimeout(r, 1200)); // splash
+
+  if (token && user) {
+    showHome();
+  } else {
+    show('auth');
+  }
+});
+
+// ── AUTH ──
+async function sendOtp() {
+  const phone = document.getElementById('phone-input').value.trim();
+  if (phone.length < 10) return toast('Enter a valid phone number');
+  try {
+    const data = await api('POST', '/auth/send-otp', { phone });
+    document.getElementById('step-phone').style.display = 'none';
+    document.getElementById('step-otp').style.display = 'flex';
+    if (data.code) {
+      const hint = document.getElementById('otp-hint');
+      hint.style.display = 'block';
+      document.getElementById('otp-code-display').textContent = data.code;
+    }
+    toast('Code sent!');
+  } catch(e) {
+    toast('Error sending code. Check your connection.');
+  }
+}
+
+async function verifyOtp() {
+  const phone = document.getElementById('phone-input').value.trim();
+  const code = document.getElementById('otp-input').value.trim();
+  const role = document.getElementById('role-select').value;
+  if (code.length < 6) return toast('Enter 6-digit code');
+  try {
+    const data = await api('POST', '/auth/verify-otp', { phone, code, role });
+    if (data.accessToken) {
+      token = data.accessToken;
+      user = data.user;
+      localStorage.setItem('taxi_token', token);
+      localStorage.setItem('taxi_user', JSON.stringify(user));
+      showHome();
+    } else {
+      toast(data.message || 'Invalid code');
+    }
+  } catch(e) {
+    toast('Verification failed');
+  }
+}
+
+function backToPhone() {
+  document.getElementById('step-phone').style.display = 'flex';
+  document.getElementById('step-otp').style.display = 'none';
+}
+
+function logout() {
+  localStorage.removeItem('taxi_token');
+  localStorage.removeItem('taxi_user');
+  token = null; user = null;
+  show('auth');
+  document.getElementById('step-phone').style.display = 'flex';
+  document.getElementById('step-otp').style.display = 'none';
+}
+
+// ── HOME ──
+function showHome() {
+  show('home');
+  stopTracking();
+  if (!homeMap) {
+    homeMap = L.map('map', { zoomControl: false }).setView([myLat, myLng], 14);
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      attribution: '© OpenStreetMap'
+    }).addTo(homeMap);
+    myMarker = L.marker([myLat, myLng], {
+      icon: L.divIcon({ className:'', html:'<div style="font-size:28px;transform:translate(-50%,-50%)">📍</div>', iconSize:[0,0] })
+    }).addTo(homeMap);
+  } else {
+    homeMap.setView([myLat, myLng], 14);
+    if (myMarker) myMarker.setLatLng([myLat, myLng]);
+    setTimeout(() => homeMap.invalidateSize(), 100);
+  }
+  if (user) document.getElementById('home-greeting').textContent = `Hello, ${user.name || user.phone?.slice(-4) || 'there'} 👋`;
+  loadNearbyDrivers();
+}
+
+async function loadNearbyDrivers() {
+  try {
+    const data = await api('GET', `/drivers/nearby?lat=${myLat}&lng=${myLng}`);
+    const drivers = Array.isArray(data) ? data : (data.drivers || []);
+    document.getElementById('drivers-badge').textContent =
+      drivers.length > 0 ? `🚗 ${drivers.length} nearby` : '🚗 Looking...';
+    drivers.forEach(d => {
+      if (d.currentLat && d.currentLng) {
+        L.marker([d.currentLat, d.currentLng], {
+          icon: L.divIcon({ className:'', html:'<div style="font-size:24px;transform:translate(-50%,-50%)">🚗</div>', iconSize:[0,0] })
+        }).addTo(homeMap);
+      }
+    });
+  } catch {
+    document.getElementById('drivers-badge').textContent = '🚗 Looking...';
+  }
+}
+
+// ── BOOK ──
+function showBook() {
+  show('book');
+  dropoffLat = null; dropoffLng = null;
+  document.getElementById('dropoff-text').textContent = 'Tap the map to set destination';
+  document.getElementById('dropoff-text').style.color = '#999';
+  document.getElementById('fare-section').style.display = 'none';
+  document.getElementById('tap-hint').style.display = 'block';
+
+  if (!bookMap) {
+    bookMap = L.map('book-map', { zoomControl: false }).setView([myLat, myLng], 14);
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      attribution: '© OpenStreetMap'
+    }).addTo(bookMap);
+    L.marker([myLat, myLng], {
+      icon: L.divIcon({ className:'', html:'<div style="font-size:24px;transform:translate(-50%,-50%)">📍</div>', iconSize:[0,0] })
+    }).addTo(bookMap);
+
+    bookMap.on('click', async (e) => {
+      dropoffLat = e.latlng.lat;
+      dropoffLng = e.latlng.lng;
+
+      if (dropMarker) bookMap.removeLayer(dropMarker);
+      dropMarker = L.marker([dropoffLat, dropoffLng], {
+        icon: L.divIcon({ className:'', html:'<div style="font-size:24px;transform:translate(-50%,-50%)">🏁</div>', iconSize:[0,0] })
+      }).addTo(bookMap);
+
+      bookMap.fitBounds([[myLat, myLng], [dropoffLat, dropoffLng]], { padding: [40, 40] });
+
+      document.getElementById('dropoff-text').textContent = `${dropoffLat.toFixed(4)}, ${dropoffLng.toFixed(4)}`;
+      document.getElementById('dropoff-text').style.color = '#1a1a2e';
+      document.getElementById('tap-hint').style.display = 'none';
+
+      await estimateFare();
+    });
+  } else {
+    bookMap.setView([myLat, myLng], 14);
+    setTimeout(() => bookMap.invalidateSize(), 100);
+  }
+}
+
+async function estimateFare() {
+  try {
+    const data = await api('POST', '/trips/estimate', {
+      pickupLat: myLat, pickupLng: myLng,
+      dropoffLat, dropoffLng,
+    });
+    const fare = data.fareEstimate || data.fare || Math.round(Math.random() * 20 + 10);
+    const km = data.distanceKm || (Math.random() * 10 + 2).toFixed(1);
+    document.getElementById('fare-amount').textContent = fare + ' SAR';
+    document.getElementById('fare-km').textContent = `${km} km • ~${Math.round(km * 2)} min`;
+    document.getElementById('fare-section').style.display = 'block';
+    currentTrip = { fareEstimate: fare, distanceKm: km };
+  } catch {
+    const fare = Math.round(Math.random() * 20 + 10);
+    document.getElementById('fare-amount').textContent = fare + ' SAR';
+    document.getElementById('fare-section').style.display = 'block';
+    currentTrip = { fareEstimate: fare };
+  }
+}
+
+function selectPay(method) {
+  paymentMethod = method;
+  document.getElementById('pay-cash').classList.toggle('active', method === 'CASH');
+  document.getElementById('pay-card').classList.toggle('active', method === 'CARD');
+}
+
+async function bookRide() {
+  if (!dropoffLat) return toast('Set your destination first');
+  try {
+    const data = await api('POST', '/trips/request', {
+      pickupAddress: 'Current Location',
+      pickupLat: myLat, pickupLng: myLng,
+      dropoffAddress: `${dropoffLat.toFixed(4)}, ${dropoffLng.toFixed(4)}`,
+      dropoffLat, dropoffLng,
+      paymentMethod,
+    });
+    if (data.id || data.trip?.id) {
+      currentTrip = { ...currentTrip, ...data, ...(data.trip || {}) };
+    }
+    show('finding');
+    findDriver();
+  } catch(e) {
+    // Demo mode: simulate without backend
+    show('finding');
+    findDriver();
+  }
+}
+
+// ── FINDING ──
+function findDriver() {
+  // Simulate finding a driver after 4-6 seconds
+  const delay = 4000 + Math.random() * 2000;
+  setTimeout(() => {
+    const driverLat = myLat + (Math.random() - 0.5) * 0.01;
+    const driverLng = myLng + (Math.random() - 0.5) * 0.01;
+    currentTrip = {
+      ...currentTrip,
+      driverLat, driverLng,
+      driver: {
+        name: ['Ahmed Al-Rashid', 'Mohammed Al-Qahtani', 'Khalid Al-Harbi'][Math.floor(Math.random()*3)],
+        car: ['Toyota Camry', 'Hyundai Sonata', 'Kia Optima'][Math.floor(Math.random()*3)],
+        color: ['White', 'Silver', 'Black'][Math.floor(Math.random()*3)],
+        plate: 'ABC-' + Math.floor(Math.random()*9000+1000),
+        rating: (4.5 + Math.random() * 0.5).toFixed(1),
+      }
+    };
+    showTrack();
+  }, delay);
+}
+
+function cancelSearch() {
+  showHome();
+  toast('Search cancelled');
+}
+
+// ── TRACKING ──
+function showTrack() {
+  show('track');
+  const d = currentTrip?.driver || {};
+  document.getElementById('track-driver-name').textContent = d.name || 'Your Driver';
+  document.getElementById('track-driver-car').textContent = `${d.car || 'Car'} • ${d.color || ''}  •  ${d.plate || ''}`;
+  document.getElementById('track-driver-rating').textContent = `${d.rating || '4.8'} • Verified Driver`;
+
+  if (!trackMap) {
+    trackMap = L.map('track-map', { zoomControl: false }).setView([myLat, myLng], 15);
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      attribution: '© OpenStreetMap'
+    }).addTo(trackMap);
+  } else {
+    setTimeout(() => trackMap.invalidateSize(), 100);
+  }
+
+  // Passenger marker
+  L.marker([myLat, myLng], {
+    icon: L.divIcon({ className:'', html:'<div style="font-size:24px;transform:translate(-50%,-50%)">📍</div>', iconSize:[0,0] })
+  }).addTo(trackMap);
+
+  let dLat = currentTrip.driverLat || myLat + 0.005;
+  let dLng = currentTrip.driverLng || myLng + 0.005;
+
+  driverMarker = L.marker([dLat, dLng], {
+    icon: L.divIcon({ className:'', html:'<div style="font-size:28px;transform:translate(-50%,-50%)">🚗</div>', iconSize:[0,0] })
+  }).addTo(trackMap);
+
+  trackMap.fitBounds([[myLat, myLng], [dLat, dLng]], { padding: [50, 50] });
+
+  // Simulate driver moving toward passenger
+  const steps = 12;
+  let step = 0;
+  const statuses = ['Driver is on the way 🚗', 'Driver is on the way 🚗', 'Driver is approaching 🚗', 'Driver arrived! 🎉', 'Trip started 🛣️', 'Trip in progress...', 'Almost there...'];
+  let statusIdx = 0;
+
+  trackInterval = setInterval(() => {
+    step++;
+    const t = step / steps;
+    dLat = currentTrip.driverLat + (myLat - currentTrip.driverLat) * t;
+    dLng = currentTrip.driverLng + (myLng - currentTrip.driverLng) * t;
+    driverMarker.setLatLng([dLat, dLng]);
+
+    if (step % 3 === 0 && statusIdx < statuses.length - 1) {
+      statusIdx++;
+      document.getElementById('track-status').textContent = statuses[statusIdx];
+    }
+
+    if (step >= steps) {
+      clearInterval(trackInterval);
+      // Simulate trip completion after 8 more seconds
+      setTimeout(completeTrip, 8000);
+      document.getElementById('track-status').textContent = 'Trip in progress 🛣️';
+    }
+  }, 1500);
+}
+
+function stopTracking() {
+  if (trackInterval) { clearInterval(trackInterval); trackInterval = null; }
+}
+
+function callDriver() {
+  toast('Calling driver...');
+}
+
+function completeTrip() {
+  stopTracking();
+  const fare = currentTrip?.fareEstimate || 25;
+  const km = currentTrip?.distanceKm || '8.2';
+  document.getElementById('final-fare').textContent = fare + ' SAR';
+  document.getElementById('pay-method').textContent = paymentMethod === 'CASH' ? '💵 Paid in Cash' : '💳 Charged to Card';
+  document.getElementById('final-km').textContent = km + ' km';
+  document.getElementById('final-pickup').textContent = 'Current Location';
+  document.getElementById('final-dropoff').textContent = dropoffLat ? `${dropoffLat.toFixed(4)}, ${dropoffLng.toFixed(4)}` : 'Destination';
+
+  // Save to history
+  const hist = JSON.parse(localStorage.getItem('taxi_history') || '[]');
+  hist.unshift({ fare, km, date: new Date().toLocaleString(), status: 'Completed', pickup: 'Current Location', dropoff: document.getElementById('final-dropoff').textContent });
+  localStorage.setItem('taxi_history', JSON.stringify(hist.slice(0, 20)));
+
+  show('complete');
+  setupStars();
+}
+
+function setupStars() {
+  const wrap = document.getElementById('stars');
+  let selected = 5;
+  const render = () => {
+    wrap.innerHTML = [1,2,3,4,5].map(i =>
+      `<span onclick="selectStar(${i})">${i <= selected ? '⭐' : '☆'}</span>`
+    ).join('');
+  };
+  window.selectStar = (n) => { selected = n; render(); toast('Thanks for rating!'); };
+  render();
+}
+
+// ── HISTORY ──
+async function showHistory() {
+  show('history');
+  const list = document.getElementById('hist-list');
+  list.innerHTML = '<div style="text-align:center;padding:20px;color:#888">Loading...</div>';
+
+  let trips = [];
+  try {
+    const data = await api('GET', '/users/trips/history?page=1');
+    trips = Array.isArray(data) ? data : (data.trips || data.data || []);
+  } catch {}
+
+  // Merge with local history
+  const local = JSON.parse(localStorage.getItem('taxi_history') || '[]');
+
+  if (trips.length === 0 && local.length === 0) {
+    list.innerHTML = '<div class="hist-empty">🚖<br><br>No trips yet.<br>Book your first ride!</div>';
+    return;
+  }
+
+  list.innerHTML = '';
+  local.forEach(t => {
+    list.innerHTML += `<div class="hist-card">
+      <div class="hist-date">${t.date || 'Recent'}</div>
+      <div class="hist-addr">📍 ${t.pickup} → 🏁 ${t.dropoff}</div>
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-top:8px">
+        <div class="hist-fare">${t.fare} SAR</div>
+        <div class="hist-status">Completed</div>
+      </div>
+    </div>`;
+  });
+
+  trips.forEach(t => {
+    list.innerHTML += `<div class="hist-card">
+      <div class="hist-date">${new Date(t.createdAt || Date.now()).toLocaleString()}</div>
+      <div class="hist-addr">📍 ${t.pickupAddress || 'Pickup'} → 🏁 ${t.dropoffAddress || 'Dropoff'}</div>
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-top:8px">
+        <div class="hist-fare">${t.finalFare || t.fareEstimate || '—'} SAR</div>
+        <div class="hist-status">${t.status || 'Completed'}</div>
+      </div>
+    </div>`;
+  });
+}
+
+// ── PROFILE ──
+function showProfile() {
+  show('profile');
+  if (user) {
+    document.getElementById('profile-name').textContent = user.name || user.phone || 'User';
+    document.getElementById('profile-phone').textContent = user.phone || '';
+  }
+}
+</script>
+</body>
+</html>

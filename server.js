@@ -157,7 +157,7 @@ app.get('/file/:id', (req, res) => {
   const dir = sessionDir(id);
   const full = path.resolve(dir, filePath);
 
-  if (!full.startsWith(dir)) return res.status(403).json({ error: 'Access denied' });
+  if (full !== dir && !full.startsWith(dir + path.sep)) return res.status(403).json({ error: 'Access denied' });
   if (!fs.existsSync(full)) return res.status(404).json({ error: 'File not found' });
 
   const stat = fs.statSync(full);
@@ -178,7 +178,7 @@ app.post('/file/:id', (req, res) => {
   const dir = sessionDir(id);
   const full = path.resolve(dir, filePath);
 
-  if (!full.startsWith(dir)) return res.status(403).json({ error: 'Access denied' });
+  if (full !== dir && !full.startsWith(dir + path.sep)) return res.status(403).json({ error: 'Access denied' });
   if (!fs.existsSync(path.dirname(full))) return res.status(404).json({ error: 'Directory not found' });
 
   fs.writeFileSync(full, content, 'utf8');
