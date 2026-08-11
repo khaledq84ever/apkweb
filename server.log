@@ -26,3 +26,129 @@ ConnectionResetError: [Errno 104] Connection reset by peer
 ----------------------------------------
 127.0.0.1 - - [11/Aug/2026 02:20:02] "GET /taxiapp.apk HTTP/1.1" 200 -
 127.0.0.1 - - [11/Aug/2026 02:30:02] "GET /taxiapp.apk HTTP/1.1" 200 -
+another apkweb-serve is running — skipped
+127.0.0.1 - - [11/Aug/2026 02:54:58] "GET /taxiapp.apk HTTP/1.1" 200 -
+apkweb up on 4417
+127.0.0.1 - - [11/Aug/2026 03:00:05] "GET /taxiapp.apk HTTP/1.1" 200 -
+127.0.0.1 - - [11/Aug/2026 03:10:02] "GET /taxiapp.apk HTTP/1.1" 200 -
+72.60.89.132 - - [11/Aug/2026 03:11:29] "GET /taxiapp-version.json HTTP/1.1" 200 -
+72.60.89.132 - - [11/Aug/2026 03:11:29] "GET /taxiapp.apk HTTP/1.1" 200 -
+----------------------------------------
+Exception occurred during processing of request from ('94.128.235.118', 6735)
+----------------------------------------
+Exception occurred during processing of request from ('94.128.235.118', 6736)
+Traceback (most recent call last):
+Traceback (most recent call last):
+  File "/usr/lib/python3.12/socketserver.py", line 692, in process_request_thread
+    self.finish_request(request, client_address)
+  File "/usr/lib/python3.12/http/server.py", line 1311, in finish_request
+    self.RequestHandlerClass(request, client_address, self,
+  File "/usr/lib/python3.12/http/server.py", line 672, in __init__
+    super().__init__(*args, **kwargs)
+  File "/usr/lib/python3.12/socketserver.py", line 761, in __init__
+    self.handle()
+  File "/usr/lib/python3.12/http/server.py", line 436, in handle
+    self.handle_one_request()
+  File "/usr/lib/python3.12/http/server.py", line 404, in handle_one_request
+    self.raw_requestline = self.rfile.readline(65537)
+                           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/socket.py", line 707, in readinto
+    return self._sock.recv_into(b)
+           ^^^^^^^^^^^^^^^^^^^^^^^
+ConnectionResetError: [Errno 104] Connection reset by peer
+  File "/usr/lib/python3.12/socketserver.py", line 692, in process_request_thread
+    self.finish_request(request, client_address)
+  File "/usr/lib/python3.12/http/server.py", line 1311, in finish_request
+    self.RequestHandlerClass(request, client_address, self,
+  File "/usr/lib/python3.12/http/server.py", line 672, in __init__
+    super().__init__(*args, **kwargs)
+  File "/usr/lib/python3.12/socketserver.py", line 761, in __init__
+    self.handle()
+  File "/usr/lib/python3.12/http/server.py", line 436, in handle
+    self.handle_one_request()
+  File "/usr/lib/python3.12/http/server.py", line 404, in handle_one_request
+    self.raw_requestline = self.rfile.readline(65537)
+                           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/socket.py", line 707, in readinto
+    return self._sock.recv_into(b)
+           ^^^^^^^^^^^^^^^^^^^^^^^
+ConnectionResetError: [Errno 104] Connection reset by peer
+----------------------------------------
+----------------------------------------
+127.0.0.1 - - [11/Aug/2026 03:20:02] "GET /taxiapp.apk HTTP/1.1" 200 -
+127.0.0.1 - - [11/Aug/2026 03:30:01] "GET /taxiapp.apk HTTP/1.1" 200 -
+127.0.0.1 - - [11/Aug/2026 03:40:01] "GET /taxiapp.apk HTTP/1.1" 200 -
+127.0.0.1 - - [11/Aug/2026 03:50:01] "GET /taxiapp.apk HTTP/1.1" 200 -
+127.0.0.1 - - [11/Aug/2026 04:00:02] "GET /taxiapp.apk HTTP/1.1" 200 -
+127.0.0.1 - - [11/Aug/2026 04:10:03] "GET /taxiapp.apk HTTP/1.1" 200 -
+127.0.0.1 - - [11/Aug/2026 04:20:01] "GET /taxiapp.apk HTTP/1.1" 200 -
+127.0.0.1 - - [11/Aug/2026 04:30:02] "GET /taxiapp.apk HTTP/1.1" 200 -
+127.0.0.1 - - [11/Aug/2026 04:40:02] "GET /taxiapp.apk HTTP/1.1" 200 -
+127.0.0.1 - - [11/Aug/2026 04:50:02] "GET /taxiapp.apk HTTP/1.1" 200 -
+127.0.0.1 - - [11/Aug/2026 05:00:02] "GET /taxiapp.apk HTTP/1.1" 200 -
+127.0.0.1 - - [11/Aug/2026 05:10:01] "GET /taxiapp.apk HTTP/1.1" 200 -
+127.0.0.1 - - [11/Aug/2026 05:20:01] "GET /taxiapp.apk HTTP/1.1" 200 -
+127.0.0.1 - - [11/Aug/2026 05:30:01] "GET /taxiapp.apk HTTP/1.1" 200 -
+127.0.0.1 - - [11/Aug/2026 05:40:02] "GET /taxiapp.apk HTTP/1.1" 200 -
+127.0.0.1 - - [11/Aug/2026 05:50:01] "GET /taxiapp.apk HTTP/1.1" 200 -
+127.0.0.1 - - [11/Aug/2026 06:00:02] "GET /taxiapp.apk HTTP/1.1" 200 -
+127.0.0.1 - - [11/Aug/2026 06:10:01] "GET /taxiapp.apk HTTP/1.1" 200 -
+127.0.0.1 - - [11/Aug/2026 06:20:01] "GET /taxiapp.apk HTTP/1.1" 200 -
+127.0.0.1 - - [11/Aug/2026 06:30:02] "GET /taxiapp.apk HTTP/1.1" 200 -
+127.0.0.1 - - [11/Aug/2026 06:40:01] "GET /taxiapp.apk HTTP/1.1" 200 -
+127.0.0.1 - - [11/Aug/2026 06:50:02] "GET /taxiapp.apk HTTP/1.1" 200 -
+127.0.0.1 - - [11/Aug/2026 07:00:02] "GET /taxiapp.apk HTTP/1.1" 200 -
+127.0.0.1 - - [11/Aug/2026 07:10:01] "GET /taxiapp.apk HTTP/1.1" 200 -
+127.0.0.1 - - [11/Aug/2026 07:20:01] "GET /taxiapp.apk HTTP/1.1" 200 -
+127.0.0.1 - - [11/Aug/2026 07:30:01] "GET /taxiapp.apk HTTP/1.1" 200 -
+127.0.0.1 - - [11/Aug/2026 07:40:02] "GET /taxiapp.apk HTTP/1.1" 200 -
+127.0.0.1 - - [11/Aug/2026 07:50:01] "GET /taxiapp.apk HTTP/1.1" 200 -
+127.0.0.1 - - [11/Aug/2026 08:00:02] "GET /taxiapp.apk HTTP/1.1" 200 -
+127.0.0.1 - - [11/Aug/2026 08:10:02] "GET /taxiapp.apk HTTP/1.1" 200 -
+72.60.89.132 - - [11/Aug/2026 08:19:04] "GET /taxiapp.apk HTTP/1.1" 200 -
+127.0.0.1 - - [11/Aug/2026 08:20:02] "GET /taxiapp.apk HTTP/1.1" 200 -
+127.0.0.1 - - [11/Aug/2026 08:30:01] "GET /taxiapp.apk HTTP/1.1" 200 -
+127.0.0.1 - - [11/Aug/2026 08:40:02] "GET /taxiapp.apk HTTP/1.1" 200 -
+127.0.0.1 - - [11/Aug/2026 08:50:02] "GET /taxiapp.apk HTTP/1.1" 200 -
+72.60.89.132 - - [11/Aug/2026 08:58:02] "GET /taxiapp.apk HTTP/1.1" 200 -
+127.0.0.1 - - [11/Aug/2026 09:00:02] "GET /taxiapp.apk HTTP/1.1" 200 -
+127.0.0.1 - - [11/Aug/2026 09:10:01] "GET /taxiapp.apk HTTP/1.1" 200 -
+72.60.89.132 - - [11/Aug/2026 09:10:09] "GET /taxiapp.apk HTTP/1.1" 200 -
+127.0.0.1 - - [11/Aug/2026 09:20:01] "GET /taxiapp.apk HTTP/1.1" 200 -
+127.0.0.1 - - [11/Aug/2026 09:30:02] "GET /taxiapp.apk HTTP/1.1" 200 -
+127.0.0.1 - - [11/Aug/2026 09:40:02] "GET /taxiapp.apk HTTP/1.1" 200 -
+72.60.89.132 - - [11/Aug/2026 09:45:02] "GET /taxiapp.apk HTTP/1.1" 200 -
+72.60.89.132 - - [11/Aug/2026 09:45:02] "GET /taxiapp-version.json HTTP/1.1" 200 -
+127.0.0.1 - - [11/Aug/2026 09:50:01] "GET /taxiapp.apk HTTP/1.1" 200 -
+127.0.0.1 - - [11/Aug/2026 10:00:02] "GET /taxiapp.apk HTTP/1.1" 200 -
+127.0.0.1 - - [11/Aug/2026 10:10:02] "GET /taxiapp.apk HTTP/1.1" 200 -
+127.0.0.1 - - [11/Aug/2026 10:24:13] "GET /taxiapp.apk HTTP/1.1" 200 -
+----------------------------------------
+Exception occurred during processing of request from ('127.0.0.1', 41208)
+Traceback (most recent call last):
+  File "/usr/lib/python3.12/socketserver.py", line 692, in process_request_thread
+    self.finish_request(request, client_address)
+  File "/usr/lib/python3.12/http/server.py", line 1311, in finish_request
+    self.RequestHandlerClass(request, client_address, self,
+  File "/usr/lib/python3.12/http/server.py", line 672, in __init__
+    super().__init__(*args, **kwargs)
+  File "/usr/lib/python3.12/socketserver.py", line 761, in __init__
+    self.handle()
+  File "/usr/lib/python3.12/http/server.py", line 436, in handle
+    self.handle_one_request()
+  File "/usr/lib/python3.12/http/server.py", line 424, in handle_one_request
+    method()
+  File "/usr/lib/python3.12/http/server.py", line 679, in do_GET
+    self.copyfile(f, self.wfile)
+  File "/usr/lib/python3.12/http/server.py", line 878, in copyfile
+    shutil.copyfileobj(source, outputfile)
+  File "/usr/lib/python3.12/shutil.py", line 204, in copyfileobj
+    fdst_write(buf)
+  File "/usr/lib/python3.12/socketserver.py", line 840, in write
+    self._sock.sendall(b)
+BrokenPipeError: [Errno 32] Broken pipe
+----------------------------------------
+another apkweb-serve is running — skipped
+127.0.0.1 - - [11/Aug/2026 10:34:59] "GET /taxiapp.apk HTTP/1.1" 200 -
+apkweb up on 4417
+127.0.0.1 - - [11/Aug/2026 10:40:03] "GET /taxiapp.apk HTTP/1.1" 200 -
