@@ -3,3 +3,4 @@ uploads/
 workspace/
 *.apk
 !public/*.apk
+server.log

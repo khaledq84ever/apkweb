@@ -4,6 +4,9 @@ const unzipper = require('unzipper');
 const archiver = require('archiver');
 const fs = require('fs');
 const path = require('path');
+const crypto = require('crypto');
+const dns = require('dns').promises;
+const net = require('net');
 const { execSync } = require('child_process');
 
 const app = express();
@@ -13,7 +16,7 @@ app.use(express.static('public'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-const upload = multer({ dest: 'uploads/' });
+const upload = multer({ dest: 'uploads/', limits: { fileSize: 200 * 1024 * 1024 } });
 
 function sessionDir(id) {
   return path.join(__dirname, 'workspace', id);
@@ -23,6 +26,58 @@ function cleanId(id) {
   return id.replace(/[^a-zA-Z0-9_-]/g, '');
 }
 
+function newSessionId() {
+  return crypto.randomBytes(16).toString('hex');
+}
+
+// Blocks loopback/private/link-local ranges so /upload-url can't be used to
+// reach internal services (SSRF) via a supplied URL or its redirect chain.
+function isPrivateAddress(ip) {
+  if (net.isIPv4(ip)) {
+    const p = ip.split('.').map(Number);
+    return p[0] === 10 || p[0] === 127 || p[0] === 0 ||
+      (p[0] === 169 && p[1] === 254) ||
+      (p[0] === 172 && p[1] >= 16 && p[1] <= 31) ||
+      (p[0] === 192 && p[1] === 168);
+  }
+  if (net.isIPv6(ip)) {
+    const lower = ip.toLowerCase();
+    if (lower === '::1' || lower === '::') return true;
+    if (lower.startsWith('fe80:') || lower.startsWith('fc') || lower.startsWith('fd')) return true;
+    if (lower.startsWith('::ffff:')) {
+      const v4 = lower.slice(7);
+      if (net.isIPv4(v4)) return isPrivateAddress(v4);
+    }
+    return false;
+  }
+  return true; // unknown family - block
+}
+
+const MAX_REDIRECTS = 5;
+const MAX_DOWNLOAD_BYTES = 200 * 1024 * 1024;
+
+async function safeFetch(startUrl) {
+  let current = startUrl;
+  for (let i = 0; i <= MAX_REDIRECTS; i++) {
+    const u = new URL(current);
+    if (!/^https?:$/.test(u.protocol)) throw new Error('Blocked protocol');
+    const { address } = await dns.lookup(u.hostname);
+    if (isPrivateAddress(address)) throw new Error('Refusing to fetch a private/internal address');
+
+    const res = await fetch(current, { redirect: 'manual' });
+    if ([301, 302, 303, 307, 308].includes(res.status)) {
+      const loc = res.headers.get('location');
+      if (!loc) throw new Error('Redirect with no Location header');
+      current = new URL(loc, current).toString();
+      continue;
+    }
+    const len = res.headers.get('content-length');
+    if (len && Number(len) > MAX_DOWNLOAD_BYTES) throw new Error('File too large');
+    return res;
+  }
+  throw new Error('Too many redirects');
+}
+
 // Fetch APK from URL
 app.post('/upload-url', async (req, res) => {
   const { url } = req.body;
@@ -30,13 +85,13 @@ app.post('/upload-url', async (req, res) => {
 
   let fetchRes;
   try {
-    fetchRes = await fetch(url, { redirect: 'follow' });
+    fetchRes = await safeFetch(url);
     if (!fetchRes.ok) return res.status(400).json({ error: `Download failed: HTTP ${fetchRes.status}` });
   } catch (e) {
     return res.status(400).json({ error: 'Could not reach URL: ' + e.message });
   }
 
-  const id = Date.now().toString();
+  const id = newSessionId();
   const dir = sessionDir(id);
   fs.mkdirSync(dir, { recursive: true });
 
@@ -48,12 +103,16 @@ app.post('/upload-url', async (req, res) => {
     const urlName = new URL(url).pathname.split('/').pop();
     if (urlName && urlName.endsWith('.apk')) originalName = urlName;
   }
+  // sanitize: strips path separators and header-breaking chars before it's ever
+  // written into a Content-Disposition header on /download
+  originalName = originalName.replace(/[\\/"\r\n]/g, '_').slice(0, 200) || 'app.apk';
 
   const tmpPath = path.join(__dirname, 'uploads', id + '.apk');
   fs.mkdirSync(path.dirname(tmpPath), { recursive: true });
 
   try {
     const buf = Buffer.from(await fetchRes.arrayBuffer());
+    if (buf.length > MAX_DOWNLOAD_BYTES) throw new Error('File too large');
     fs.writeFileSync(tmpPath, buf);
   } catch (e) {
     return res.status(500).json({ error: 'Failed to save APK: ' + e.message });
@@ -89,12 +148,12 @@ app.post('/upload-url', async (req, res) => {
 app.post('/upload', upload.single('apk'), async (req, res) => {
   if (!req.file) return res.status(400).json({ error: 'No file uploaded' });
 
-  const id = Date.now().toString();
+  const id = newSessionId();
   const dir = sessionDir(id);
   fs.mkdirSync(dir, { recursive: true });
 
   const apkPath = req.file.path;
-  const originalName = req.file.originalname || 'app.apk';
+  const originalName = (req.file.originalname || 'app.apk').replace(/[\\/"\r\n]/g, '_').slice(0, 200) || 'app.apk';
 
   // Extract APK (it's a ZIP)
   try {
